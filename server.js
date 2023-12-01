@@ -8,10 +8,12 @@ const courseRoute = require("./routes").course;
 const passport = require("passport");
 require("./config/passport")(passport);
 const cors = require("cors");
+const path = require("path");
+const port = process.env.PORT || 8080; // process.env.PORT 該值為Heroku 動態自動設定
 
 //conect to MongoDB 連接上資料庫
 mongoose
-  .connect("mongodb://127.0.0.1:27017/mernDB")
+  .connect(process.env.MONGODB_CONNECTION)
   .then(() => {
     console.log("Connecting to mongodb...");
   })
@@ -23,6 +25,7 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(express.static(path.join(__dirname, "client", "build")));
 
 app.use("/api/user", authRoute);
 //course route should be projected  課程的Route須被JWT保護
@@ -36,7 +39,15 @@ app.use(
 //只有已經登入系統後的人，才能新增或是註冊課程
 //Only users who have already logged into the system are allowed to add or register for courses.
 
+if (
+  process.env.NODE_ENV === "production" ||
+  process.env.NODE_ENV === "staging"
+) {
+  app.get("*", (req, res) => {
+    path.join(__dirname, "client", "build", "index.html");
+  });
+}
 // Server is running on port 8080. 後端伺服器正在port 8080運行
-app.listen(8080, () => {
+app.listen(port, () => {
   console.log("The backend server is running on port 8080.");
 });
