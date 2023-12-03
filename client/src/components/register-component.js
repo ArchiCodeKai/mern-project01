@@ -25,12 +25,17 @@ const RegisterComponent = () => {
 
   const handleRegister = () => {
     AuthService.register(username, email, password, role)
-      .then(() => {
-        window.alert("註冊成功。您現在將被導向到登入頁面");
-        navigate("/login");
+      .then((response) => {
+        if (response && response.data) {
+          window.alert("註冊成功。您現在將被導向到登入頁面");
+          navigate("/login");
+        } else {
+          // 處理回應不存在的情況
+          console.error("API 回應不存在或未包含 'data' 屬性。", response);
+        }
       })
       .catch((e) => {
-        setMessage(e.response.data);
+        setMessage(e.response ? e.response.data : "發生未知錯誤。");
       });
   };
 
