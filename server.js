@@ -44,7 +44,7 @@ if (
   process.env.NODE_ENV === "staging"
 ) {
   app.get("*", (req, res) => {
-    path.join(__dirname, "client", "build", "index.html");
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
   });
 }
 // Server is running on port 8080. 後端伺服器正在port 8080運行
